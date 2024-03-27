@@ -1,0 +1,14 @@
+{
+  "name": "proxy-generator",
+  "version": "1.0.0",
+  "description": "For generating Orbit proxys from tFC",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sam Chilton",
+  "license": "MIT",
+  "dependencies": {
+    "xeue-logs": "^2.2.3"
+  }
+}
