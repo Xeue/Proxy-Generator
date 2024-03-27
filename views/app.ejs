@@ -27,28 +27,32 @@
                 <button id="showLogs" class="btn btn-secondary">Logs</button>
             </div>
         </nav>
-        <main id="proxyCont" class="overflow-hidden">
-            <section id="categorySelect" class="tab d-flex h-100 overflow-auto">
-                <div id="paramsCont" class="flex-grow-1 px-3 section">
+        <main id="proxyCont" class="overflow-hidden h-100">
+            <section id="categorySelect" class="tab h-100 overflow-auto">
+                <div id="paramsCont" class="flex-grow-1 px-3 section d-flex flex-column h-100 pt-2">
                     <label for="paramURL" class="form-label">TFC URL</label>
                     <input class="form-control" type="text" id="paramURL" value="https://api.nepuk.tfclabs.com">
                     <label for="paramAPI" class="form-label">TFC API Version</label>
                     <input class="form-control" type="text" id="paramAPI" value="v1/api">
                     <label for="paramToken" class="form-label">TFC auth token</label>
                     <textarea class="form-control mb-3" rows="3" type="text" id="paramToken">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IiQxIiwiY29udGV4dCI6ImRyaXZlciIsImV4cCI6MTc0MjA4MDE0MiwiaWF0IjoxNzEwNTIyNTQyLCJpc3MiOiJCcm9hZGNhc3QgRHJpdmVyIEpXVCBHZW5lcmF0b3IifQ.PzOvaebsFJHBsrlzKj_f8KAmsZ8oAaL5tsvGHqimBMM</textarea>
-                    <button class="btn btn-primary float-end" type="button" id="paramsSet">Next</button>
+                    <button class="btn btn-primary float-end mb-3 mt-auto" type="button" id="paramsSet">Next</button>
                 </div>
-                <div id="categoryCont" class="d-none flex-grow-1 px-3 section">
-                    <div id="categoryList">
+                <div id="categoryCont" class="d-none flex-grow-1 px-3 section d-flex flex-column h-100 pt-2">
+                    <div class="input-group pt-2">
+                        <input class="form-control" type="text" id="catagorySearch" placeholder="Catagory Name">
+                        <button id="catagoryClear" class="btn btn-secondary search">Clear</span>
+                    </div>
+                    <div id="categoryList" class="d-flex flex-wrap gap-2 pt-2">
 
                     </div>
-                    <button class="bg-success form-control" type="button" id="categorySet">Next</button>
+                    <button class="btn btn-primary float-end mb-3 mt-auto" type="button" id="categorySet">Next</button>
                 </div>
-                <div id="spigotsCont" class="d-none flex-grow-1 px-3 section">
+                <div id="spigotsCont" class="d-none flex-grow-1 px-3 section d-flex flex-column h-100 pt-2">
                     <div id="spigotsList">
 
                     </div>
-                    <button class="bg-success form-control" type="button" id="spigotSet">Generate</button>
+                    <button class="btn btn-primary float-end mb-3 mt-auto" type="button" id="spigotSet">Generate Proxy</button>
                 </div>
             </section>
             <section id="logs" class="h-100 overflow-auto tab d-none"></section>

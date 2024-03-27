@@ -7,9 +7,18 @@ document.addEventListener('DOMContentLoaded', () => {
 		const _categoryList = document.getElementById('categoryList');
 		_categoryList.innerHTML = "";
 		Object.keys(catagories).forEach(id => {
-			_categoryList.insertAdjacentHTML('beforeend', `<div class="categoryOption" data-id=${id}>${catagories[id]}</div>`);
+			_categoryList.insertAdjacentHTML('beforeend', `<div class="categoryOption card card-body" data-id=${id}>${catagories[id]}</div>`);
 		})
 		showSection('categoryCont');
+	});
+
+	window.electronAPI.devices((event, devices) => {
+		const _spigotsList = document.getElementById('spigotsList');
+		_spigotsList.innerHTML = "";
+		Object.keys(devices).forEach(id => {
+			_spigotsList.insertAdjacentHTML('beforeend', `<div class="spigotCont">${JSON.stringify(devices[id])}</div>`);
+		})
+		showSection('spigotsCont');
 	});
 	
 	on('click', '#paramsSet', ()=>{
@@ -23,7 +32,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	on('click', '#showSelect', ()=>showTab('categorySelect'));
 	on('click', '#showLogs', ()=>showTab('logs'));
+	on('input', '#catagorySearch', _element=>{
+		const __catagories = document.getElementsByClassName('categoryOption');
+		for (const _catagory of __catagories) {
+			if (!_catagory.innerHTML.includes(_element.value)) _catagory.classList.add('d-none');
+			else _catagory.classList.remove('d-none');
+		}
+	})
+	on('click', '#catagoryClear', ()=>{
+		const __catagories = document.getElementsByClassName('categoryOption');
+		for (const _catagory of __catagories) {
+			_catagory.classList.remove('d-none');
+		}
+		document.getElementById('catagorySearch').value = "";
+	})
+	on('click', '.categoryOption', _element => {
+		const __selected = document.getElementsByClassName('selectedCategory');
+		for (const _selected of __selected) {
+			_selected.classList.remove('selectedCategory');
+		}
+		_element.classList.add('selectedCategory');
+	});
 
+	on('click', '#categorySet', ()=>{
+		const _selected = document.getElementsByClassName('selectedCategory')[0];
+		window.electronAPI.setCategory(_selected.getAttribute('data-id'));
+	})
 });
 
 

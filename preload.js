@@ -3,7 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('electronAPI', {
 	log: (callback) => ipcRenderer.on('log', callback),
 	setParams: message => ipcRenderer.send('setParams', message),
-	setGateway: message => ipcRenderer.send('setGateway', message),
+	setCategory: message => ipcRenderer.send('setCategory', message),
 	setSpigots: message => ipcRenderer.send('setSpigots', message),
 	catagories: (callback) => ipcRenderer.on('catagories', callback),
 	devices: (callback) => ipcRenderer.on('devices', callback),

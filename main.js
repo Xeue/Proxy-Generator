@@ -67,7 +67,7 @@ async function setUpApp() {
         if (catagories) mainWindow.webContents.send('catagories', catagories);
 	})
 
-    ipcMain.on('setCatagory', async (event, message) => {
+    ipcMain.on('setCategory', async (event, message) => {
         Logs.debug('Catagory selected, getting spigots');
         const devices = await getSpigots(message);
         mainWindow.webContents.send('devices', devices);
