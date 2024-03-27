@@ -55,7 +55,31 @@
                     <button class="btn btn-primary float-end mb-3 mt-auto" type="button" id="spigotSet">Generate Proxy</button>
                 </div>
             </section>
-            <section id="logs" class="h-100 overflow-auto tab d-none"></section>
+            <section id="logsTab" class="h-100 overflow-auto tab d-none">
+                <menu id="logsFilter">
+                    <input type="checkbox" id="core" checked>
+                    <input type="checkbox" id="info" checked>
+                    <input type="checkbox" id="debug" checked>
+                    <input type="checkbox" id="warning" checked>
+                    <input type="checkbox" id="error" checked>
+                    <input type="checkbox" id="timestamp">
+                    <input type="checkbox" id="level">
+                    <input type="checkbox" id="catagory" checked>
+                    <input type="checkbox" id="line">
+                    <div class="greenLog">Core</div>
+                    <div class="dimLog">Info</div>
+                    <div class="cyanLog">Debug</div>
+                    <div class="yellowLog">Warn</div>
+                    <div class="redLog">Error</div>
+                    <div>Times</div>
+                    <div>Level</div>
+                    <div>Type</div>
+                    <div>Line</div>
+                </menu>
+                <div id="logs-cont">
+                    <div id="logs"></div>
+                </div>
+            </section>
         </main>
     </body>
 </html>
