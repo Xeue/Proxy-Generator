@@ -1,15 +1,154 @@
-//import {Logs as _Logs} from 'xeue-logs';
-const _Logs = require('xeue-logs').Logs;
-//import {promises as files} from 'fs';
+/* eslint-disable no-unused-vars */
 const files = require('fs').promises;
+const path = require('path');
+const _Logs = require('xeue-logs').Logs;
+const {app, BrowserWindow, ipcMain} = require('electron');
+const {version} = require('./package.json');
+const electronEjs = require('electron-ejs');
+const {MicaBrowserWindow, IS_WINDOWS_11} = require('mica-electron');
+
+const background = IS_WINDOWS_11 ? 'micaActive' : 'bg-dark';
+
+const __static = __dirname+'/static';
+
+
+/* Globals */
+
+let isQuiting = false;
+let mainWindow = null;
+const devEnv = app.isPackaged ? './' : './';
+const __main = path.resolve(__dirname, devEnv);
 
 const Logs = new _Logs(false, 'logs', './', 'A', {'template': '$CATAGORY$SEPERATOR $MESSAGE'});
 const logLevel = ['A', 'INPUT', Logs.c];
 let TFCURL, TFCAPIString, token;
 
-Logs.printHeader('ProxyGen');
+/* Start App */
 
-main();
+(async () => {
+	await app.whenReady();
+	await setUpApp();
+	await createWindow();
+    Logs.printHeader('ProxyGen');
+})().catch(error => {
+	console.log(error);
+});
+
+const ejs = new electronEjs({
+	'static': __static,
+	'background': background,
+	'version': version
+}, {});
+
+
+/* Electron */
+
+
+async function setUpApp() {
+	ipcMain.on('window', (event, message) => {
+		switch (message) {
+		case 'exit':
+			app.quit();
+			break;
+		case 'minimise':
+			mainWindow.hide();
+			break;
+		default:
+			break;
+		}
+	});
+
+	ipcMain.on('setParams', async (event, message) => {
+        Logs.debug('Setting connection parameters and getting catagories');
+        TFCURL = message.TFCURL;
+        TFCAPIString = message.TFCAPIString;
+        token = message.token;
+		const catagories = await getCatagories();
+        if (catagories) mainWindow.webContents.send('catagories', catagories);
+	})
+
+    ipcMain.on('setCatagory', async (event, message) => {
+        Logs.debug('Catagory selected, getting spigots');
+        const devices = await getSpigots(message);
+        mainWindow.webContents.send('devices', devices);
+    })
+
+    ipcMain.on('setSpigots', async (event, message) => {
+        Logs.debug('Got spiggots, building XML');
+        const filePath = await buildXML(message.devices);
+        mainWindow.webContents.send('xml', filePath);
+    })
+
+	app.on('before-quit', function () {
+		isQuiting = true;
+	});
+
+	app.on('activate', async () => {
+		if (BrowserWindow.getAllWindows().length === 0) createWindow();
+	});
+
+	Logs.on('logSend', message => {
+		if (!isQuiting) mainWindow.webContents.send('log', message);
+	});
+}
+
+async function createWindow() {
+	const windowOptions = {
+		width: 1440,
+		height: 720,
+		autoHideMenuBar: true,
+		webPreferences: {
+			contextIsolation: true,
+			preload: path.resolve(__main, 'preload.js')
+		},
+		icon: path.join(__static, 'img/icon/icon.png'),
+		show: false,
+		frame: false,
+		titleBarStyle: 'hidden',
+		titleBarOverlay: {
+			color: '#313d48',
+			symbolColor: '#ffffff',
+			height: 56
+		}
+	}
+	
+	if (IS_WINDOWS_11) {
+        windowOptions.height = 1720;
+		mainWindow = new MicaBrowserWindow(windowOptions);
+		mainWindow.setDarkTheme();
+		mainWindow.setMicaEffect();
+	} else {
+		mainWindow = new BrowserWindow(windowOptions);
+	}
+
+	if (!app.commandLine.hasSwitch('hidden')) {
+		mainWindow.show();
+        if (IS_WINDOWS_11) mainWindow.setSize(1440, 845);
+        else mainWindow.setSize(1440, 720);
+	} else {
+		mainWindow.hide();
+	}
+
+	mainWindow.on('close', function (event) {
+		Logs.warn("Exiting");
+	});
+
+	mainWindow.on('minimize', function (event) {
+		Logs.info("Minimising");
+	});
+
+	mainWindow.loadURL(path.resolve(__main, 'views/app.ejs'));
+}
+
+function sendGUI(channel, message) {
+	mainWindow.webContents.send(channel, message);
+}
+
+async function sleep(seconds) {
+	await new Promise (resolve => setTimeout(resolve, 1000*seconds));
+}
+
+//main();
 
 async function doApi(endpoint, method = 'GET') {
     const url = `${TFCURL}/${TFCAPIString}/${endpoint}`;
@@ -19,33 +158,32 @@ async function doApi(endpoint, method = 'GET') {
             'Authorization': 'Bearer '+token
         }
     }
-    const request = await fetch(url, requestOptions);
-    const requestJson = await request.json();
-    return requestJson;
+    Logs.debug(`Connectiong to: ${url}`);
+    try {
+        const request = await fetch(url, requestOptions);
+        const requestJson = await request.json();
+        return requestJson;
+    } catch (error) {
+        Logs.error('Failed to do fetch, incorrect details?', error);
+    }
 }
 
-async function getInputs() {
-    Logs.log('TFC API URL', logLevel)
-    const [URLPromise] = Logs.input('https://api.nepuk.tfclabs.com');
-    TFCURL = await URLPromise;
-    Logs.log('TFC API Version', logLevel)
-    const [APIPromise] = Logs.input('v1/api');
-    TFCAPIString = await APIPromise;
-    Logs.log('TFC API Token', logLevel)
-    const [tokenPromise] = Logs.input('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IiQxIiwiY29udGV4dCI6ImRyaXZlciIsImV4cCI6MTc0MjA4MDE0MiwiaWF0IjoxNzEwNTIyNTQyLCJpc3MiOiJCcm9hZGNhc3QgRHJpdmVyIEpXVCBHZW5lcmF0b3IifQ.PzOvaebsFJHBsrlzKj_f8KAmsZ8oAaL5tsvGHqimBMM');
-    token = await tokenPromise;
+async function getCatagories() {
+    try {        
+        const catagoriesData = await doApi('categories');
+        const catagories = {};
+        catagoriesData.results.forEach(category => {
+            catagories[category.id] = category.name;
+        });
+        return catagories;
+    } catch (error) {
+        Logs.error('Failed to get catagories', error);
+        mainWindow.webContents.send('error', 'Failed to connect to server, are the connection details correct?');
+    }
 }
 
-async function main() {
-    await getInputs();
+async function getSpigots(selectedCatagory) {
     const devices = {};
-    const catagoriesData = await doApi('categories');
-    const catagories = {};
-    catagoriesData.results.forEach(catagory => {
-        catagories[catagory.id] = catagory.name;
-    });
-    Logs.log('Select Catagory:', logLevel)
-    const selectedCatagory = await Logs.select(catagories, catagoriesData.results[0].id);
     const tagsRequest = await doApi('categories/'+selectedCatagory+'/tags');
     const tags = tagsRequest.results.map(tag => tag.id);
     const tagsPromise = [];
@@ -91,7 +229,10 @@ async function main() {
 
     await Promise.all(devicesPromises);
     //Logs.object(devices);
+    return devices;
+}
 
+async function buildXML(devices) {
     let output = `<?xml version="1.0" encoding="UTF-8"?>\n`;
     Object.keys(devices).forEach(deviceKey => {
         const device = devices[deviceKey];
@@ -162,6 +303,6 @@ async function main() {
     })
 
     Logs.log(`Proxy file created as 'Proxy ${catagories[selectedCatagory]}.xml' in this folder`, logLevel);
-    await files.writeFile(`./Proxy ${catagories[selectedCatagory]}.xml`, output);
-    process.exit();
+    await files.writeFile(path.join(__main, `Proxy ${catagories[selectedCatagory]}.xml`), output);
+    return path.join(__main, `Proxy ${catagories[selectedCatagory]}.xml`);
 }

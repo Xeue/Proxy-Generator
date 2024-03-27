@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Proxy Gen</title>
+        <meta name="color-scheme" content="dark">
+        <link type="text/css" rel="stylesheet" href="<%-static%>/lib/bootstrap.min.css">
+        <link type="text/css" rel="stylesheet" href="<%-static%>/css/app.css">
+        <link id="favicon_48" rel="icon" href="<%-static%>/img/icon/icon.svg" sizes="256x256">
+        <script type="text/javascript">
+            const version = '<%=version%>';
+            const static = '<%=static%>';
+            let firmware;
+        </script>
+        <script type="text/javascript" src="<%-static%>/lib/jquery-3.6.0.min.js"></script>
+        <script type="text/javascript" src="<%-static%>/lib/bootstrap.min.js"></script>
+        <script type="text/javascript" src="<%-static%>/lib/commonWS.js"></script>
+        <script type="text/javascript" src="<%-static%>/js/app.js"></script>
+    </head>
+    <body class="<%-background%> overflow-hidden d-flex flex-column" id="body" data-bs-theme="dark">
+        <nav class="drag navbar navbar-expand-lg navbar-dark bg-title px-2 pe-5 m-0">
+            <a class="navbar-brand" href="#">
+                <img src="../static/img/icon/icon.svg" class="d-inline-block align-top" alt="" width="30" height="30">
+                ProxyGen
+            </a>
+            <div class="m-auto">
+                <button id="showSelect" class="btn btn-secondary">Home</button>
+                <button id="showLogs" class="btn btn-secondary">Logs</button>
+            </div>
+        </nav>
+        <main id="proxyCont" class="overflow-hidden">
+            <section id="categorySelect" class="tab d-flex h-100 overflow-auto">
+                <div id="paramsCont" class="flex-grow-1 px-3 section">
+                    <label for="paramURL" class="form-label">TFC URL</label>
+                    <input class="form-control" type="text" id="paramURL" value="https://api.nepuk.tfclabs.com">
+                    <label for="paramAPI" class="form-label">TFC API Version</label>
+                    <input class="form-control" type="text" id="paramAPI" value="v1/api">
+                    <label for="paramToken" class="form-label">TFC auth token</label>
+                    <textarea class="form-control mb-3" rows="3" type="text" id="paramToken">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IiQxIiwiY29udGV4dCI6ImRyaXZlciIsImV4cCI6MTc0MjA4MDE0MiwiaWF0IjoxNzEwNTIyNTQyLCJpc3MiOiJCcm9hZGNhc3QgRHJpdmVyIEpXVCBHZW5lcmF0b3IifQ.PzOvaebsFJHBsrlzKj_f8KAmsZ8oAaL5tsvGHqimBMM</textarea>
+                    <button class="btn btn-primary float-end" type="button" id="paramsSet">Next</button>
+                </div>
+                <div id="categoryCont" class="d-none flex-grow-1 px-3 section">
+                    <div id="categoryList">
+
+                    </div>
+                    <button class="bg-success form-control" type="button" id="categorySet">Next</button>
+                </div>
+                <div id="spigotsCont" class="d-none flex-grow-1 px-3 section">
+                    <div id="spigotsList">
+
+                    </div>
+                    <button class="bg-success form-control" type="button" id="spigotSet">Generate</button>
+                </div>
+            </section>
+            <section id="logs" class="h-100 overflow-auto tab d-none"></section>
+        </main>
+    </body>
+</html>

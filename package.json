@@ -3,12 +3,46 @@
   "version": "1.0.0",
   "description": "For generating Orbit proxys from tFC",
   "main": "main.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "Sam Chilton",
   "license": "MIT",
   "dependencies": {
-    "xeue-logs": "^2.2.3"
+    "xeue-logs": "^2.2.3",
+    "ejs": "^3.1.9",
+    "electron-ejs": "^1.2.1",
+    "mica-electron": "^1.5.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.xeue.proxy",
+    "productName": "Proxy",
+    "files": [
+      "**/*",
+      "static/*",
+      "lib/*"
+    ],
+    "win": {
+      "icon": "static/img/icon/icon.ico",
+      "asarUnpack": "**/lib/*.exe",
+      "requestedExecutionLevel": "requireAdministrator",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "artifactName": "Proxy-v${version}.exe"
+    }
+  },
+  "devDependencies": {
+    "electron": "^26.1.0",
+    "electron-builder": "^24.6.3"
   }
 }

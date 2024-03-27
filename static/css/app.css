@@ -1,0 +1,292 @@
+body {
+   margin: 0;
+   position: absolute;
+   inset: 0;
+}
+
+nav {
+   position: absolute;
+   bottom: 0;
+   right: 0;
+   margin: 5px;
+   padding: 5px;
+}
+
+label {
+   display: block;
+   padding: 5px;
+   border-radius: 5px;
+   text-transform: capitalize;
+   border: dashed 1px transparent;
+   cursor: pointer;
+}
+
+label > input {
+   margin-left: 10px;
+}
+
+label:has(:checked) {
+   border-color: white;
+   background: #2e303a;
+}
+
+.log {
+   color: #fff;
+   white-space: break-spaces
+}
+
+.cyanLog {
+   color: cyan
+}
+
+.greenLog {
+   color: lime
+}
+
+.purpleLog {
+   color: #fe00fe
+}
+
+.blueLog {
+   color: blue
+}
+
+.yellowLog {
+   color: #ff0
+}
+
+.redLog {
+   color: red
+}
+
+.whiteLog {
+   color: #fff
+}
+
+.whiteLog.dimLog {
+   color: #969696
+}
+
+.greenLog.dimLog {
+   color: #005800
+}
+
+.redLog.dimLog {
+   color: darkred
+}
+
+.purpleLog.dimLog {
+   color: purple
+}
+
+.blueLog.dimLog {
+   color: #2d2dc9
+}
+
+.yellowLog.dimLog {
+   color: #9a9a00
+}
+
+.cyanLog.dimLog {
+   color: #009e9e
+}
+
+.green {
+   background-color: #417f3f;
+   border-top: 1px solid #459942 !important
+}
+
+.red {
+   background-color: #7f3f3f;
+   border-top: 1px solid #954f4f !important
+}
+
+.blue {
+   background-color: #3f6a7f;
+   border-top: 1px solid #4c8099 !important
+}
+
+.purple {
+   background-color: #7a3f7f;
+   border-top: 1px solid #99539f !important
+}
+
+.green:hover {
+   background-color: #28b538;
+   border-top: 1px solid #3ce34f !important
+}
+
+.red:hover {
+   background-color: #d50303;
+   border-top: 1px solid #ff5f5f !important
+}
+
+.blue:hover {
+   background-color: #00abff;
+   border-top: 1px solid #62cafd !important
+}
+
+.purple:hover {
+   background-color: #ce00df;
+   border-top: 1px solid #f253ff !important
+}
+
+.versionInfo {
+   align-self: center;
+   margin-right: auto;
+   padding-left: 20px;
+   font-size: 25pt;
+   color: #fff
+}
+
+
+#logsCont {
+   display: flex;
+   flex-direction: column-reverse;
+   overflow: auto;
+   height: 100%;
+}
+
+#logs {
+   font-family: Ubuntu Mono;
+   margin-bottom: auto;
+   line-height: normal;
+}
+
+body.micaActive {
+   background: transparent !important;
+}
+
+.bg-title {
+   background-color: #313d48;
+   app-region: drag;
+}
+
+
+.diskCapacity {
+   height: 1rem;
+   background: aliceblue;
+   border-radius: 6px;
+   overflow: hidden;
+}
+
+.diskCapacity::before {
+   content: "";
+   display: block;
+   height: 100%;
+   width: var(--capacity);
+   background: #00b2ff;
+}
+
+.diskCard {
+   background: #282e34;
+   margin: 1rem;
+   padding: 0.2rem;
+   border-radius: 7px;
+   margin-right: 0.5rem;
+   outline: #0d6efd00 1px solid;
+   box-shadow: #0d6efd00 0px 0px 9px -2px;
+   transition: 0.3s;
+}
+
+.diskCard:has(input:checked) {
+   outline: #0d6efd 1px solid;
+   box-shadow: #0D6EFD 0px 0px 9px -2px;
+}
+
+.diskIcon {
+   aspect-ratio: 1/1;
+   height: 3rem;
+   margin: 0 0.5rem;
+   background-image: url('../img/unknown.png');
+   background-size: contain;
+   background-position: center;
+   background-repeat: no-repeat;
+}
+
+.LocalFixedDisk {
+   background-image: url('../img/ssd.png');
+   background-size: contain;
+   background-position: center;
+   background-repeat: no-repeat;
+}
+
+.LocalFixedDiskC {
+   background-image: url('../img/ssd-c.png');
+   background-size: contain;
+   background-position: center;
+   background-repeat: no-repeat;
+}
+
+.RemovableDisk {
+   background-image: url('../img/usb.png');
+   background-size: contain;
+   background-position: center;
+   background-repeat: no-repeat;
+}
+
+.cardType {
+   background: #282e34;
+   margin: 1rem;
+   margin-left: 0.5rem;
+   padding: 0.5rem;
+   border-radius: 7px;
+   color: white;
+   width: 8rem;
+   background-size: 5rem;
+   background-position-x: center;
+   background-position-y: 0.5rem;
+   background-repeat: no-repeat;
+   height: 8rem;
+   text-align: center;
+   padding-top: 5.5rem;
+   cursor: pointer;
+   box-shadow: transparent 0px 0px 8px -3px;
+   transition: 0.3s;
+}
+
+.cardType:hover {
+   box-shadow: #000000 0px 0px 8px -3px;
+   scale: 1.05;
+}
+
+#chooseGateway {
+    background-image: url('../img/sdi.png');
+}
+
+#chooseMADI {
+    background-image: url('../img/madi.png');
+}
+
+#chooseMV {
+    background-image: url('../img/multi.png');
+}
+
+#showSelect,
+.btn {
+	app-region: no-drag;
+}
+
+@font-face {
+   font-family: Ubuntu Mono;
+   src: url(../fonts/UbuntuMono-R.ttf);
+}
+
+.configFirmwareSelect {
+   display: none;
+}
+
+.configFirmware:checked ~ .configFirmwareSelect {
+   display: block;
+}
+
+#diskConfigList {
+   display: grid;
+   grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+}
+
+#configControls {
+   right: 1rem;
+   bottom: 1rem;
+   position: fixed;
+}
