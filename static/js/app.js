@@ -17,28 +17,33 @@ document.addEventListener('DOMContentLoaded', () => {
 		_spigotsList.innerHTML = "";
 		Object.keys(devices).forEach(id => {
 			const device = devices[id];
-			let html = `<div class="spigotCont">
-	<div class="deviceInfo">
-		<div class="deviceName">${device.name}</div>
-		<div class="deviceRedIP">Red IP: ${device.redIP}</div>
-		<div class="deviceBlueIP">Blue IP: ${device.blueIP}</div>
+			let html = `<div class="spigotCont card">
+	<div class="d-flex deviceInfo gap-4 card-header">
+		<input type="checkbox" checked>
+		<div class="">Name: <input class="deviceName form-control-sm form-control" value="${device.name}"></div>
+		<div class="">Red IP: <input class="deviceRedIP form-control-sm form-control" value="${device.redIP}"></div>
+		<div class="">Blue IP: <input class="deviceBlueIP form-control-sm form-control" value="${device.blueIP}"></div>
+		<input type="checkbox" checked class="deviceShow">
 	</div>
-	<div class="deviceSpigots">`;
+	<div class="card-body d-flex deviceSpigots flex-column gap-3">`;
 			device.spigots.forEach(spigot => {
-				html += `<div class="deviceSpigot">
-					<div class="spigotInfo" data-name="${spigot.name}" data-number="${spigot.number}">
+				html += `<div class="card deviceSpigot">
+					<div class="d-flex gap-3 card-header spigotInfo" data-name="${spigot.name}" data-number="${spigot.number}">
+						<input type="checkbox" checked>
 						<div class="spigotName">Spigot ${spigot.number}: ${spigot.name}</div>
-						<div class="flows">`
+						<input type="checkbox" class="spigotShow">
+					</div>
+					<div class="card-body d-flex flex-column flows gap-1 flowCont">`
 				for (const key in spigot) {
 					if (['name', 'number'].includes(key)) continue;
-					html += `<div class="flow">
-						<div class="flowType">${key}</div>
-						<div class="flowPrimary">${spigot[key].primary_multicast_address}</div>
-						<div class="flowSecondary">${spigot[key].secondary_multicast_address}</div>
+					html += `<div class="align-items-center align-self-baseline d-flex flow gap-3">
+						<input type="checkbox" checked>
+						Type: <input class="form-control-sm form-control flowType" value="${key}">
+						Red: <input class="form-control-sm form-control flowPrimary" value="${spigot[key].primary_multicast_address}">
+						Blue: <input class="form-control-sm form-control flowSecondary" value="${spigot[key].secondary_multicast_address}">
 					</div>`;
 				}
 				html += `</div>
-					</div>
 				</div>`;
 			})
 			html += `</div></div>`;

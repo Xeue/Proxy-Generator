@@ -251,3 +251,27 @@ body.micaActive {
 #logsTab:has(#error:checked) .log[data-level="[E]"] {
    display: inline;
 }
+
+.spigotShow {
+   margin-left: auto;
+}
+.deviceShow {
+   margin-left: auto;
+   margin-right: 1rem;
+}
+
+.deviceSpigots {
+   display: none !important;
+}
+
+.spigotCont:has(.deviceShow:checked) .deviceSpigots {
+   display: flex !important;
+}
+
+.flowCont {
+   display: none !important;
+}
+
+.deviceSpigot:has(.spigotShow:checked) .flowCont {
+   display: flex !important;
+}
