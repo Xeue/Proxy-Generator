@@ -48,11 +48,30 @@
                     </div>
                     <button class="btn btn-primary float-end mb-3 mt-auto" type="button" id="categorySet">Next</button>
                 </div>
-                <div id="spigotsCont" class="d-none flex-grow-1 px-3 section d-flex flex-column h-100 pt-3 overflow-auto" style="padding-bottom: 5rem;">
-                    <div id="spigotsList">
+                <div id="spigotsCont" class="d-none flex-grow-1 px-3 section d-flex flex-column h-100 pt-3 overflow-auto pb-5">
+                    <div id="spigotsList" class="mb-2">
 
                     </div>
                     <button class="bottom-0 btn btn-primary mb-3 position-absolute" type="button" id="spigotSet" style="width: calc(100% - 2rem)">Generate Proxy</button>
+                </div>
+                <div id="xmlCont" class="d-none flex-grow-1 px-3 section d-flex flex-column h-100 pt-3 overflow-auto pb-5">
+                    <div class="card">
+                        <div class="align-items-center card-body d-flex justify-content-between">
+                            <div>
+                                <span>Path to XML: </span>
+                                <div id="xmlPath"></div>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary" id="openXml">Open File</button>
+                                <button class="btn btn-primary" id="showXml">Show in Folder</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mt-3 mb-4">
+                        <div class="card-header">Preview</div>
+                        <pre class="card-body mb-0" lang="xml" id="xmlPreview"></pre>
+                    </div>
+                    <button class="bottom-0 btn btn-primary mb-3 position-absolute" type="button" id="reset" style="width: calc(100% - 2rem)">Make Another</button>
                 </div>
             </section>
             <section id="logsTab" class="h-100 overflow-auto tab d-none">

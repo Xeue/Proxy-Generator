@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		_spigotsList.innerHTML = "";
 		Object.keys(devices).forEach(id => {
 			const device = devices[id];
-			let html = `<div class="spigotCont card">
+			let html = `<div class="spigotCont card mb-3" data-id="${device.id}">
 	<div class="d-flex deviceInfo gap-4 card-header">
 		<input type="checkbox" checked>
 		<div class="">Name: <input class="deviceName form-control-sm form-control" value="${device.name}"></div>
@@ -27,10 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	</div>
 	<div class="card-body d-flex deviceSpigots flex-column gap-3">`;
 			device.spigots.forEach(spigot => {
-				html += `<div class="card deviceSpigot">
+				html += `<div class="card deviceSpigot" data-number="${spigot.number}" data-name=${spigot.name}>
 					<div class="d-flex gap-3 card-header spigotInfo" data-name="${spigot.name}" data-number="${spigot.number}">
-						<input type="checkbox" checked>
-						<div class="spigotName">Spigot ${spigot.number}: ${spigot.name}</div>
+						<input type="checkbox" class="spigotSelected" checked>
+						<div class="">Spigot ${spigot.number}: <span class="spigotName">${spigot.name}</span></div>
 						<input type="checkbox" class="spigotShow">
 					</div>
 					<div class="card-body d-flex flex-column flows gap-1 flowCont">`
@@ -51,6 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
 		})
 		showSection('spigotsCont');
 	});
+
+	window.electronAPI.xml((event, message) => {
+		document.getElementById('xmlPath').innerHTML = message.path;
+		document.getElementById('xmlPreview').innerText = message.xml;
+		showSection('xmlCont');
+	})
 	
 	on('click', '#paramsSet', ()=>{
 		const params = {
@@ -88,6 +94,54 @@ document.addEventListener('DOMContentLoaded', () => {
 	on('click', '#categorySet', ()=>{
 		const _selected = document.getElementsByClassName('selectedCategory')[0];
 		window.electronAPI.setCategory(_selected.getAttribute('data-id'));
+	})
+
+	on('click', '#spigotSet', ()=>{
+		const devices = {};
+		const _spigotsList = document.getElementById('spigotsList');
+		for (const _device of _spigotsList.children) {
+			if (!_device.querySelector('.deviceInfo > input:checked')) continue;
+			const id = _device.getAttribute('data-id');
+			const guid = id.replace(/-/g, '');
+			const _spigots = _device.querySelector('.deviceSpigots');
+			const spigots = [];
+			for (const _spigot of _spigots.children) {
+				if (!_spigot.querySelector('.spigotSelected:checked')) continue;
+				const spigot = {
+					'name': _spigot.querySelector('.spigotName').innerHTML,
+					'number': _spigot.getAttribute('data-number'),	
+				}
+				const __flows = _spigot.querySelectorAll('.flow');
+				for (const _flow of __flows) {
+					const flowType = _flow.querySelector('.flowType').value;
+					spigot[flowType] = {
+						'primary_multicast_address': _flow.querySelector('.flowPrimary').value,
+						'secondary_multicast_address': _flow.querySelector('.flowSecondary').value
+					}
+				}
+				spigots.push(spigot);
+			}
+			devices[guid] = {
+				'name': _device.querySelector('.deviceName').value,
+				'redIP': _device.querySelector('.deviceRedIP').value,
+				'blueIP': _device.querySelector('.deviceBlueIP').value,
+				'id': id,
+				'spigots': spigots
+			};
+		}
+		window.electronAPI.setSpigots({
+			'devices': devices
+		});
+	})
+
+	on('click', '#openXml', ()=>{
+		window.electronAPI.openFile(document.getElementById('xmlPath').innerHTML);
+	})
+	on('click', '#showXml', ()=>{
+		window.electronAPI.openExplorer(document.getElementById('xmlPath').innerHTML);
+	})
+	on('click', '#reset', ()=>{
+		showSection('paramsCont');
 	})
 });
 

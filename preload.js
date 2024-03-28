@@ -5,6 +5,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	setParams: message => ipcRenderer.send('setParams', message),
 	setCategory: message => ipcRenderer.send('setCategory', message),
 	setSpigots: message => ipcRenderer.send('setSpigots', message),
+	openExplorer: message => ipcRenderer.send('openExplorer', message),
+	openFile: message => ipcRenderer.send('openFile', message),
 	catagories: (callback) => ipcRenderer.on('catagories', callback),
 	devices: (callback) => ipcRenderer.on('devices', callback),
 	xml: (callback) => ipcRenderer.on('xml', callback),

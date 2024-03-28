@@ -2,7 +2,7 @@
 const files = require('fs').promises;
 const path = require('path');
 const _Logs = require('xeue-logs').Logs;
-const {app, BrowserWindow, ipcMain} = require('electron');
+const {app, BrowserWindow, ipcMain, shell} = require('electron');
 const {version} = require('./package.json');
 const electronEjs = require('electron-ejs');
 const {MicaBrowserWindow, IS_WINDOWS_11} = require('mica-electron');
@@ -21,7 +21,7 @@ const __main = path.resolve(__dirname, devEnv);
 
 const Logs = new _Logs(false, 'logs', './', 'A', {'template': '$CATAGORY$SEPERATOR $MESSAGE'});
 const logLevel = ['A', 'INPUT', Logs.c];
-let TFCURL, TFCAPIString, token;
+let TFCURL, TFCAPIString, token, targetCatagory, allCatagories;
 
 /* Start App */
 
@@ -64,19 +64,29 @@ async function setUpApp() {
         TFCAPIString = message.TFCAPIString;
         token = message.token;
 		const catagories = await getCatagories();
+        allCatagories = catagories;
         if (catagories) mainWindow.webContents.send('catagories', catagories);
 	})
 
     ipcMain.on('setCategory', async (event, message) => {
         Logs.debug('Catagory selected, getting spigots');
+        targetCatagory = allCatagories[message];
         const devices = await getSpigots(message);
         mainWindow.webContents.send('devices', devices);
     })
 
     ipcMain.on('setSpigots', async (event, message) => {
         Logs.debug('Got spiggots, building XML');
-        const filePath = await buildXML(message.devices);
-        mainWindow.webContents.send('xml', filePath);
+        const [filePath, xml] = await buildXML(message.devices);
+        mainWindow.webContents.send('xml', {'path': filePath, 'xml': xml});
+    })
+
+    ipcMain.on('openExplorer', (event, message) => {
+        shell.showItemInFolder(message);
+    })
+    
+    ipcMain.on('openFile', (event, message) => {
+        shell.openPath(message);
     })
 
 	app.on('before-quit', function () {
@@ -158,7 +168,7 @@ async function doApi(endpoint, method = 'GET') {
             'Authorization': 'Bearer '+token
         }
     }
-    Logs.debug(`Connectiong to: ${url}`);
+    Logs.debug(`Connecting to: ${url}`);
     try {
         const request = await fetch(url, requestOptions);
         const requestJson = await request.json();
@@ -228,7 +238,6 @@ async function getSpigots(selectedCatagory) {
     })
 
     await Promise.all(devicesPromises);
-    //Logs.object(devices);
     return devices;
 }
 
@@ -302,7 +311,7 @@ async function buildXML(devices) {
         output += `</Device>\n`;
     })
 
-    Logs.log(`Proxy file created as 'Proxy ${catagories[selectedCatagory]}.xml' in this folder`, logLevel);
-    await files.writeFile(path.join(__main, `Proxy ${catagories[selectedCatagory]}.xml`), output);
-    return path.join(__main, `Proxy ${catagories[selectedCatagory]}.xml`);
+    Logs.log(`Proxy file created as 'Proxy ${targetCatagory}.xml' in this folder`, logLevel);
+    await files.writeFile(path.join(__main, `Proxy ${targetCatagory}.xml`), output);
+    return [path.join(__main, `Proxy ${targetCatagory}.xml`), output];
 }
