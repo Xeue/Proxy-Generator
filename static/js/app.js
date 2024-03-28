@@ -13,43 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	});
 
 	window.electronAPI.devices((event, devices) => {
-		const _spigotsList = document.getElementById('spigotsList');
-		_spigotsList.innerHTML = "";
-		Object.keys(devices).forEach(id => {
-			const device = devices[id];
-			let html = `<div class="spigotCont card mb-3" data-id="${device.id}">
-	<div class="d-flex deviceInfo gap-4 card-header">
-		<input type="checkbox" checked>
-		<div class="">Name: <input class="deviceName form-control-sm form-control" value="${device.name}"></div>
-		<div class="">Red IP: <input class="deviceRedIP form-control-sm form-control" value="${device.redIP}"></div>
-		<div class="">Blue IP: <input class="deviceBlueIP form-control-sm form-control" value="${device.blueIP}"></div>
-		<input type="checkbox" checked class="deviceShow">
-	</div>
-	<div class="card-body d-flex deviceSpigots flex-column gap-3">`;
-			device.spigots.forEach(spigot => {
-				html += `<div class="card deviceSpigot" data-number="${spigot.number}" data-name=${spigot.name}>
-					<div class="d-flex gap-3 card-header spigotInfo" data-name="${spigot.name}" data-number="${spigot.number}">
-						<input type="checkbox" class="spigotSelected" checked>
-						<div class="">Spigot ${spigot.number}: <span class="spigotName">${spigot.name}</span></div>
-						<input type="checkbox" class="spigotShow">
-					</div>
-					<div class="card-body d-flex flex-column flows gap-1 flowCont">`
-				for (const key in spigot) {
-					if (['name', 'number'].includes(key)) continue;
-					html += `<div class="align-items-center align-self-baseline d-flex flow gap-3">
-						<input type="checkbox" checked>
-						Type: <input class="form-control-sm form-control flowType" value="${key}">
-						Red: <input class="form-control-sm form-control flowPrimary" value="${spigot[key].primary_multicast_address}">
-						Blue: <input class="form-control-sm form-control flowSecondary" value="${spigot[key].secondary_multicast_address}">
-					</div>`;
-				}
-				html += `</div>
-				</div>`;
-			})
-			html += `</div></div>`;
-			_spigotsList.insertAdjacentHTML('beforeend', html);
-		})
-		showSection('spigotsCont');
+		doDevices(devices);
 	});
 
 	window.electronAPI.xml((event, message) => {
@@ -100,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const devices = {};
 		const _spigotsList = document.getElementById('spigotsList');
 		for (const _device of _spigotsList.children) {
-			if (!_device.querySelector('.deviceInfo > input:checked')) continue;
+			if (!_device.querySelector('.deviceSelected:checked')) continue;
 			const id = _device.getAttribute('data-id');
 			const guid = id.replace(/-/g, '');
 			const _spigots = _device.querySelector('.deviceSpigots');
@@ -113,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				}
 				const __flows = _spigot.querySelectorAll('.flow');
 				for (const _flow of __flows) {
+					if (!_flow.querySelector('.flowSelected:checked')) continue;
 					const flowType = _flow.querySelector('.flowType').value;
 					spigot[flowType] = {
 						'primary_multicast_address': _flow.querySelector('.flowPrimary').value,
@@ -144,6 +109,50 @@ document.addEventListener('DOMContentLoaded', () => {
 		showSection('paramsCont');
 	})
 });
+
+
+function doDevices(devices) {
+	const _spigotsList = document.getElementById('spigotsList');
+	_spigotsList.innerHTML = "";
+	console.log(devices);
+	Object.keys(devices).forEach(id => {
+		const device = devices[id];
+		let html = `<div class="spigotCont card mb-3" data-id="${device.id}">
+<div class="d-flex deviceInfo gap-4 card-header">
+	<div class="form-check form-switch my-auto"><input class="form-check-input deviceSelected" type="checkbox" checked></div>
+	<div class="">Name: <input class="deviceName form-control-sm form-control" value="${device.name}"></div>
+	<div class="">Red IP: <input class="deviceRedIP form-control-sm form-control" value="${device.redIP}"></div>
+	<div class="">Blue IP: <input class="deviceBlueIP form-control-sm form-control" value="${device.blueIP}"></div>
+	<input type="checkbox" checked class="deviceShow">
+</div>
+<div class="card-body d-flex deviceSpigots flex-column gap-3">`;
+		if (device.spigots) {
+			device.spigots.forEach(spigot => {
+				html += `<div class="card deviceSpigot" data-number="${spigot.number}" data-name=${spigot.name}>
+					<div class="d-flex gap-3 card-header spigotInfo" data-name="${spigot.name}" data-number="${spigot.number}">
+						<div class="form-check form-switch my-auto"><input class="form-check-input spigotSelected" type="checkbox" checked></div>
+						<div class="">Spigot ${spigot.number}: <span class="spigotName">${spigot.name}</span></div>
+						<input type="checkbox" class="spigotShow">
+					</div>
+					<div class="card-body d-flex flex-column flows gap-1 flowCont">`
+				for (const key in spigot) {
+					if (['name', 'number'].includes(key)) continue;
+					html += `<div class="align-items-center align-self-baseline d-flex flow gap-3">
+						<div class="form-check form-switch my-auto"><input class="form-check-input flowSelected" type="checkbox" checked></div>
+						Type: <input class="form-control-sm form-control flowType" value="${key}">
+						Red: <input class="form-control-sm form-control flowPrimary" value="${spigot[key].primary_multicast_address}">
+						Blue: <input class="form-control-sm form-control flowSecondary" value="${spigot[key].secondary_multicast_address}">
+					</div>`;
+				}
+				html += `</div>
+				</div>`;
+			})
+		}
+		html += `</div></div>`;
+		_spigotsList.insertAdjacentHTML('beforeend', html);
+	})
+	showSection('spigotsCont');
+}
 
 
 /* GUI */
