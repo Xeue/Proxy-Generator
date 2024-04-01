@@ -1,15 +1,15 @@
 {
   "name": "proxy-generator",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "For generating Orbit proxys from tFC",
   "main": "main.js",
   "author": "Sam Chilton",
   "license": "MIT",
   "dependencies": {
-    "xeue-logs": "^2.2.3",
+    "xeue-logs": "^2.3.0",
     "ejs": "^3.1.9",
     "electron-ejs": "^1.2.1",
-    "mica-electron": "^1.5.0"
+    "mica-electron": "^1.5.5"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -18,7 +18,7 @@
   },
   "build": {
     "appId": "com.xeue.proxy",
-    "productName": "Proxy",
+    "productName": "ProxyGen",
     "files": [
       "**/*",
       "static/*",
@@ -26,23 +26,18 @@
     ],
     "win": {
       "icon": "static/img/icon/icon.ico",
-      "asarUnpack": "**/lib/*.exe",
-      "requestedExecutionLevel": "requireAdministrator",
       "target": [
         {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
+          "target": "portable"
         }
       ]
     },
-    "nsis": {
-      "artifactName": "Proxy-v${version}.exe"
+    "portable": {
+      "artifactName": "ProxyGen-v${version}.exe"
     }
   },
   "devDependencies": {
-    "electron": "^26.1.0",
-    "electron-builder": "^24.6.3"
+    "electron": "^29.1.6",
+    "electron-builder": "^24.13.3"
   }
 }

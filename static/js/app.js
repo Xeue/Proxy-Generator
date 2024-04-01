@@ -108,13 +108,23 @@ document.addEventListener('DOMContentLoaded', () => {
 	on('click', '#reset', ()=>{
 		showSection('paramsCont');
 	})
+
+	on('click', '#xmlPreviewCopy', async ()=>{
+		try {
+			const element = document.getElementById("xmlPreview");
+			await navigator.clipboard.writeText(element.textContent);
+			// Optional: Provide feedback or perform additional actions upon successful copy
+		} catch (error) {
+			console.error("Failed to copy to clipboard:", error);
+			// Optional: Handle and display the error to the user
+		}
+	})
 });
 
 
 function doDevices(devices) {
 	const _spigotsList = document.getElementById('spigotsList');
 	_spigotsList.innerHTML = "";
-	console.log(devices);
 	Object.keys(devices).forEach(id => {
 		const device = devices[id];
 		let html = `<div class="spigotCont card mb-3" data-id="${device.id}">

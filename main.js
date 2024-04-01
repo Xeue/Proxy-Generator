@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 const files = require('fs').promises;
+const writeFileSync = require('fs').writeFileSync;
 const path = require('path');
 const _Logs = require('xeue-logs').Logs;
 const {app, BrowserWindow, ipcMain, shell} = require('electron');
@@ -22,6 +23,12 @@ const __main = path.resolve(__dirname, devEnv);
 const Logs = new _Logs(false, 'logs', './', 'A', {'template': '$CATAGORY$SEPERATOR $MESSAGE'});
 const logLevel = ['A', 'INPUT', Logs.c];
 let TFCURL, TFCAPIString, token, targetCatagory, allCatagories;
+
+
+process.on('uncaughtException', error => {
+	Logs.error('Uncaught error', error);
+});
+
 
 /* Start App */
 
@@ -78,6 +85,7 @@ async function setUpApp() {
     ipcMain.on('setSpigots', async (event, message) => {
         Logs.debug('Got spiggots, building XML');
         const [filePath, xml] = await buildXML(message.devices);
+        Logs.object([filePath, xml]);
         mainWindow.webContents.send('xml', {'path': filePath, 'xml': xml});
     })
 
@@ -104,7 +112,7 @@ async function setUpApp() {
 
 async function createWindow() {
 	const windowOptions = {
-		width: 1440,
+		width: 1640,
 		height: 720,
 		autoHideMenuBar: true,
 		webPreferences: {
@@ -133,8 +141,8 @@ async function createWindow() {
 
 	if (!app.commandLine.hasSwitch('hidden')) {
 		mainWindow.show();
-        if (IS_WINDOWS_11) mainWindow.setSize(1440, 845);
-        else mainWindow.setSize(1440, 720);
+        if (IS_WINDOWS_11) mainWindow.setSize(1640, 845);
+        else mainWindow.setSize(1640, 720);
 	} else {
 		mainWindow.hide();
 	}
@@ -311,7 +319,9 @@ async function buildXML(devices) {
         output += `</Device>\n`;
     })
 
-    Logs.log(`Proxy file created as 'Proxy ${targetCatagory}.xml' in this folder`, logLevel);
-    await files.writeFile(path.join(__main, `Proxy ${targetCatagory}.xml`), output);
-    return [path.join(__main, `Proxy ${targetCatagory}.xml`), output];
+    const __path = process.env.PORTABLE_EXECUTABLE_DIR || __main;
+    Logs.log(`Writing to file in ${__path}`, logLevel);
+    writeFileSync(path.join(__path, `Proxy ${targetCatagory}.xml`), output);
+    Logs.log(`Proxy file created as 'Proxy ${targetCatagory}.xml' in ${__path}`, logLevel);
+    return [path.join(__path, `Proxy ${targetCatagory}.xml`), output];
 }
