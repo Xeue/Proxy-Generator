@@ -275,3 +275,24 @@ body.micaActive {
 .deviceSpigot:has(.spigotShow:checked) .flowCont {
    display: flex !important;
 }
+
+.spigotShow,
+.deviceShow {
+   background-image: url('../img/arrow.png');
+   height: 1rem;
+   width: 1rem;
+   margin-block: auto;
+   appearance: none;
+   background-position: center;
+   background-size: 210%;
+   transition: 0.1s;
+}
+
+.spigotShow:checked,
+.deviceShow:checked {
+   rotate: -90deg;
+}
+
+input[type="checkbox"] {
+   cursor: pointer;
+}
