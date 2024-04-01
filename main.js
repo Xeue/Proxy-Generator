@@ -85,7 +85,6 @@ async function setUpApp() {
     ipcMain.on('setSpigots', async (event, message) => {
         Logs.debug('Got spiggots, building XML');
         const [filePath, xml] = await buildXML(message.devices);
-        Logs.object([filePath, xml]);
         mainWindow.webContents.send('xml', {'path': filePath, 'xml': xml});
     })
 
