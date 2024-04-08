@@ -230,8 +230,8 @@ async function getSpigots(selectedCatagory) {
         const device = spigot.device.replace(/-/g, '');
         if (typeof devices[device] == 'undefined') devices[device] = {'id':spigot.device,'spigots':[]};
         delete spigot.device;
-        devices[device].spigots[spigot.number-1] = spigot;
-        devices[device].spigots.filter(spig => spig);
+        devices[device].spigots[spigot.number] = spigot;
+        devices[device].spigots.filter(Boolean);
     })
 
     const devicesPromises = [];

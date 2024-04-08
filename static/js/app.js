@@ -138,6 +138,7 @@ function doDevices(devices) {
 <div class="card-body d-flex deviceSpigots flex-column gap-3">`;
 		if (device.spigots) {
 			device.spigots.forEach(spigot => {
+				if (!spigot) return;
 				html += `<div class="card deviceSpigot" data-number="${spigot.number}" data-name=${spigot.name}>
 					<div class="d-flex gap-3 card-header spigotInfo" data-name="${spigot.name}" data-number="${spigot.number}">
 						<div class="form-check form-switch my-auto"><input class="form-check-input spigotSelected" type="checkbox" checked></div>

@@ -1,6 +1,6 @@
 {
   "name": "proxy-generator",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "For generating Orbit proxys from tFC",
   "main": "main.js",
   "author": "Sam Chilton",
