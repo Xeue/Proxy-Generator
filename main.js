@@ -268,8 +268,6 @@ async function buildXML(devices) {
         let uhdLinking = 0;
         output += `<Device guid="{${device.id}}" userName="MCR_${device.name}" typeName="${device.type}" softVer="17.0d.124" firmVer="DBAA5EE7" ipAddressA="${redIP}" ipAddressB="${blueIP}" linkSpeedA="25000" linkSpeedB="25000" numSources="${device.spigots.length}" numDests="0">\n`;
         device.spigots.forEach((spigot, index) => {
-            Logs.log(spigot.UHD);
-            Logs.log(uhdLinking);
             if (spigot.UHD || uhdLinking > 0) {
                 uhdLinking++
             }
@@ -277,7 +275,6 @@ async function buildXML(devices) {
                 uhdLinking = 1;
             }
             if (uhdLinking > 4) uhdLinking = 0;
-            Logs.log(uhdLinking);
             output += `    <Spigot idx="${index}" mode="Src" format="3G" stream="dual" switch="MBB" prior="HI" linked="${uhdLinking > 0 ? uhdLinking-1 : 0}" numFlows_A="7" numFlows_B="7">
         <Flow_A idx="0">
             <Caps smpte2022_6="1"/>
