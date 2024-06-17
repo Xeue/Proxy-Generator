@@ -240,8 +240,9 @@ async function getSpigots(selectedCatagory) {
         devicesPromises.push(deviceRequest);
         const deviceDetails = await deviceRequest;
         devices[device].name = deviceDetails.name;
-        devices[device].redIP = deviceDetails.name.includes('SNP') ? '10.100.41.'+deviceDetails.management_ip.split('.')[3] : deviceDetails.management_ip;
-        devices[device].blueIP = deviceDetails.name.includes('SNP') ? '10.101.41.'+deviceDetails.management_ip.split('.')[3] : deviceDetails.redundant_management_ip;
+        devices[device].type = deviceDetails['_embedded'].device_type.name;
+        devices[device].redIP = devices[device].type.includes('SNP') ? '10.100.41.'+deviceDetails.management_ip.split('.')[3] : deviceDetails.management_ip;
+        devices[device].blueIP = devices[device].type.includes('SNP') ? '10.101.41.'+deviceDetails.management_ip.split('.')[3] : deviceDetails.redundant_management_ip;
     })
 
     await Promise.all(devicesPromises);
@@ -264,9 +265,20 @@ async function buildXML(devices) {
         }
         const vidPort = isSNP ? 50000 : 50100;
         const audPort = isSNP ? 50000 : 5004;
-        output += `<Device guid="{${device.id}}" userName="${device.name}" typeName="IQUCP25_SDI" softVer="17.0d.124" firmVer="DBAA5EE7" ipAddressA="${redIP}" ipAddressB="${blueIP}" linkSpeedA="25000" linkSpeedB="25000" numSources="16" numDests="0">\n`;
+        let uhdLinking = 0;
+        output += `<Device guid="{${device.id}}" userName="MCR_${device.name}" typeName="${device.type}" softVer="17.0d.124" firmVer="DBAA5EE7" ipAddressA="${redIP}" ipAddressB="${blueIP}" linkSpeedA="25000" linkSpeedB="25000" numSources="${device.spigots.length}" numDests="0">\n`;
         device.spigots.forEach((spigot, index) => {
-            output += `    <Spigot idx="${index}" mode="Src" format="3G" stream="dual" switch="MBB" prior="HI" linked="0" numFlows_A="7" numFlows_B="7">
+            Logs.log(spigot.UHD);
+            Logs.log(uhdLinking);
+            if (spigot.UHD || uhdLinking > 0) {
+                uhdLinking++
+            }
+            if (spigot.UHD) {
+                uhdLinking = 1;
+            }
+            if (uhdLinking > 4) uhdLinking = 0;
+            Logs.log(uhdLinking);
+            output += `    <Spigot idx="${index}" mode="Src" format="3G" stream="dual" switch="MBB" prior="HI" linked="${uhdLinking > 0 ? uhdLinking-1 : 0}" numFlows_A="7" numFlows_B="7">
         <Flow_A idx="0">
             <Caps smpte2022_6="1"/>
             <Params mcastAddress="" srcAddress="" dstPort="0" srcPort="0" type="none"/>

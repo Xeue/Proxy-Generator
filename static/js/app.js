@@ -73,7 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
 				if (!_spigot.querySelector('.spigotSelected:checked')) continue;
 				const spigot = {
 					'name': _spigot.querySelector('.spigotName').innerHTML,
-					'number': _spigot.getAttribute('data-number'),	
+					'number': _spigot.getAttribute('data-number'),
+					'UHD': _spigot.querySelector('.uhdLinked').checked
 				}
 				const __flows = _spigot.querySelectorAll('.flow');
 				for (const _flow of __flows) {
@@ -90,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				'name': _device.querySelector('.deviceName').value,
 				'redIP': _device.querySelector('.deviceRedIP').value,
 				'blueIP': _device.querySelector('.deviceBlueIP').value,
+				'type': _device.querySelector('.deviceType').value,
 				'id': id,
 				'spigots': spigots
 			};
@@ -133,6 +135,7 @@ function doDevices(devices) {
 	<div class="">Name: <input class="deviceName form-control-sm form-control" value="${device.name}"></div>
 	<div class="">Red IP: <input class="deviceRedIP form-control-sm form-control" value="${device.redIP}"></div>
 	<div class="">Blue IP: <input class="deviceBlueIP form-control-sm form-control" value="${device.blueIP}"></div>
+	<div class="">Type: <input class="deviceType form-control-sm form-control" value="${device.type}"></div>
 	<input type="checkbox" checked class="deviceShow">
 </div>
 <div class="card-body d-flex deviceSpigots flex-column gap-3">`;
@@ -143,6 +146,8 @@ function doDevices(devices) {
 					<div class="d-flex gap-3 card-header spigotInfo" data-name="${spigot.name}" data-number="${spigot.number}">
 						<div class="form-check form-switch my-auto"><input class="form-check-input spigotSelected" type="checkbox" checked></div>
 						<div class="">Spigot ${spigot.number}: <span class="spigotName">${spigot.name}</span></div>
+						<span>UHD: </span>
+						<div class="form-check form-switch my-auto"><input class="form-check-input uhdLinked" type="checkbox"></div>
 						<input type="checkbox" class="spigotShow">
 					</div>
 					<div class="card-body d-flex flex-column flows gap-1 flowCont">`
