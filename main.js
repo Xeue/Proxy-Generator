@@ -240,8 +240,8 @@ async function getSpigots(selectedCatagory) {
         devicesPromises.push(deviceRequest);
         const deviceDetails = await deviceRequest;
         devices[device].name = deviceDetails.name;
-        devices[device].redIP = deviceDetails.management_ip;
-        devices[device].blueIP = deviceDetails.redundant_management_ip;
+        devices[device].redIP = deviceDetails.name.includes('SNP') ? '10.100.41.'+deviceDetails.management_ip.split('.')[3] : deviceDetails.management_ip;
+        devices[device].blueIP = deviceDetails.name.includes('SNP') ? '10.101.41.'+deviceDetails.management_ip.split('.')[3] : deviceDetails.redundant_management_ip;
     })
 
     await Promise.all(devicesPromises);
@@ -252,9 +252,19 @@ async function buildXML(devices) {
     let output = `<?xml version="1.0" encoding="UTF-8"?>\n`;
     Object.keys(devices).forEach(deviceKey => {
         const device = devices[deviceKey];
-        const redIP = device.redIP || "";
-        const blueIP = device.blueIP || "";
-        output += `<Device guid="{${device.id}}" userName="${device.name}" typeName="IQUCP25_SDI" softVer="17.0d.124" firmVer="DBAA5EE7" ipAddressA="${device.redIP}" ipAddressB="${device.blueIP}" linkSpeedA="25000" linkSpeedB="25000" numSources="8" numDests="8">\n`;
+        let redIP = "";
+        let blueIP = "";
+        const isSNP = device.name.includes('SNP');
+        if (isSNP) {
+            redIP = '10.100.41.'+device.redIP.split('.')[3];
+            blueIP = '10.101.41.'+device.redIP.split('.')[3];
+        } else {
+            redIP = device.redIP;
+            blueIP = device.blueIP;
+        }
+        const vidPort = isSNP ? 50000 : 50100;
+        const audPort = isSNP ? 50000 : 5004;
+        output += `<Device guid="{${device.id}}" userName="${device.name}" typeName="IQUCP25_SDI" softVer="17.0d.124" firmVer="DBAA5EE7" ipAddressA="${redIP}" ipAddressB="${blueIP}" linkSpeedA="25000" linkSpeedB="25000" numSources="16" numDests="0">\n`;
         device.spigots.forEach((spigot, index) => {
             output += `    <Spigot idx="${index}" mode="Src" format="3G" stream="dual" switch="MBB" prior="HI" linked="0" numFlows_A="7" numFlows_B="7">
         <Flow_A idx="0">
@@ -267,19 +277,19 @@ async function buildXML(devices) {
         </Flow_B>
         <Flow_A idx="1">
             <Caps rfc_4175="1"/>
-            <Params mcastAddress="${spigot.video?.primary_multicast_address || ""}" srcAddress="${redIP}" dstPort="50100" srcPort="50100" type="rfc_4175"/>
+            <Params mcastAddress="${spigot.video?.primary_multicast_address || ""}" srcAddress="${redIP}" dstPort="${vidPort}" srcPort="${vidPort}" type="rfc_4175"/>
         </Flow_A>
         <Flow_B idx="1">
             <Caps rfc_4175="1"/>
-            <Params mcastAddress="${spigot.video?.secondary_multicast_address || ""}" srcAddress="${blueIP}" dstPort="50100" srcPort="50100" type="rfc_4175"/>
+            <Params mcastAddress="${spigot.video?.secondary_multicast_address || ""}" srcAddress="${blueIP}" dstPort="${vidPort}" srcPort="${vidPort}" type="rfc_4175"/>
         </Flow_B>
         <Flow_A idx="2">
             <Caps audio_pcm="1"/>
-            <Params mcastAddress="${spigot.audio1?.primary_multicast_address || ""}" srcAddress="${redIP}" dstPort="5004" srcPort="5004" type="audio_pcm"/>
+            <Params mcastAddress="${spigot.audio1?.primary_multicast_address || ""}" srcAddress="${redIP}" dstPort="${audPort}" srcPort="${audPort}" type="audio_pcm"/>
         </Flow_A>
         <Flow_B idx="2">
             <Caps audio_pcm="1"/>
-            <Params mcastAddress="${spigot.audio1?.secondary_multicast_address || ""}" srcAddress="${blueIP}" dstPort="5004" srcPort="5004" type="audio_pcm"/>
+            <Params mcastAddress="${spigot.audio1?.secondary_multicast_address || ""}" srcAddress="${blueIP}" dstPort="${audPort}" srcPort="${audPort}" type="audio_pcm"/>
         </Flow_B>
         <Flow_A idx="3">
             <Caps audio_pcm="1"/>
