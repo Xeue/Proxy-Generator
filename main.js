@@ -246,7 +246,17 @@ async function getSpigots(selectedCatagory) {
     })
 
     await Promise.all(devicesPromises);
-    return devices;
+    const sortedNames = Object.values(devices).map(device => device.name).sort();
+    const sortedObject = {};
+    sortedNames.forEach(name => {
+        for (const UUID in devices) {
+            if (!Object.hasOwnProperty.call(devices, UUID)) return;
+            const device = devices[UUID];
+            if (device.name == name) return sortedObject[UUID] = device;
+        }
+    })
+
+    return sortedObject;
 }
 
 async function buildXML(devices) {
@@ -265,17 +275,9 @@ async function buildXML(devices) {
         }
         const vidPort = isSNP ? 50000 : 50100;
         const audPort = isSNP ? 50000 : 5004;
-        let uhdLinking = 0;
         output += `<Device guid="{${device.id}}" userName="MCR_${device.name}" typeName="${device.type}" softVer="17.0d.124" firmVer="DBAA5EE7" ipAddressA="${redIP}" ipAddressB="${blueIP}" linkSpeedA="25000" linkSpeedB="25000" numSources="${device.spigots.length}" numDests="0">\n`;
         device.spigots.forEach((spigot, index) => {
-            if (spigot.UHD || uhdLinking > 0) {
-                uhdLinking++
-            }
-            if (spigot.UHD) {
-                uhdLinking = 1;
-            }
-            if (uhdLinking > 4) uhdLinking = 0;
-            output += `    <Spigot idx="${index}" mode="Src" format="3G" stream="dual" switch="MBB" prior="HI" linked="${uhdLinking > 0 ? uhdLinking-1 : 0}" numFlows_A="7" numFlows_B="7">
+            output += `    <Spigot idx="${index}" mode="Src" format="3G" stream="dual" switch="MBB" prior="HI" linked="${spigot.UHD ? 1 : 0}" numFlows_A="7" numFlows_B="7">
         <Flow_A idx="0">
             <Caps smpte2022_6="1"/>
             <Params mcastAddress="" srcAddress="" dstPort="0" srcPort="0" type="none"/>
