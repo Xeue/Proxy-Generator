@@ -201,7 +201,7 @@ async function getCatagories() {
 
 async function getSpigots(selectedCatagory) {
     const devices = {};
-    const tagsRequest = await doApi('categories/'+selectedCatagory+'/tags');
+    const tagsRequest = await doApi('categories/'+selectedCatagory+'/tags?limit=420');
     const tags = tagsRequest.results.map(tag => tag.id);
     const tagsPromise = [];
     tags.forEach(tag => {
