@@ -227,11 +227,15 @@ async function getSpigots(selectedCatagory) {
     await Promise.all(tagsPromises);
 
     spigots.forEach(spigot => {
-        const device = spigot.device.replace(/-/g, '');
-        if (typeof devices[device] == 'undefined') devices[device] = {'id':spigot.device,'spigots':[]};
-        delete spigot.device;
-        devices[device].spigots[spigot.number] = spigot;
-        devices[device].spigots.filter(Boolean);
+        try {            
+            const device = spigot.device.replace(/-/g, '');
+            if (typeof devices[device] == 'undefined') devices[device] = {'id':spigot.device,'spigots':[]};
+            delete spigot.device;
+            devices[device].spigots[spigot.number] = spigot;
+            devices[device].spigots.filter(Boolean);
+        } catch (error) {
+            Logs.error('Issue with spigot, probably Dylans fault', error);
+        }
     })
 
     const devicesPromises = [];
