@@ -220,6 +220,9 @@ async function getSpigots(selectedCatagory) {
             spigot[flow.level] = flowData.multicast_sessions;
             spigot.number = flowData.number;
             spigot.device = flow._links.device.id;
+            if (spigot.name.includes('SNP')) {
+                spigot.number = 1 + (spigot.number % 4096)/16 + (Math.floor(spigot.number/4096) * 4);
+            }
         });
         spigots.push(spigot);
     });
@@ -279,9 +282,11 @@ async function buildXML(devices) {
         }
         const vidPort = isSNP ? 50000 : 50100;
         const audPort = isSNP ? 50000 : 5004;
-        output += `<Device guid="{${device.id}}" userName="MCR_${device.name}" typeName="${device.type}" softVer="17.0d.124" firmVer="DBAA5EE7" ipAddressA="${redIP}" ipAddressB="${blueIP}" linkSpeedA="25000" linkSpeedB="25000" numSources="${device.spigots.length}" numDests="0">\n`;
+        output += `<Device guid="{${device.id}}" userName="MCR_${device.name}" typeName="${device.type}" softVer="17.0d.124" firmVer="DBAA5EE7" ipAddressA="${redIP}" ipAddressB="${blueIP}" linkSpeedA="25000" linkSpeedB="25000" numSources="${Math.max(device.spigots.map(spigot => spigot.number))}" numDests="0">\n`;
         device.spigots.forEach((spigot, index) => {
-            output += `    <Spigot idx="${index}" mode="Src" format="3G" stream="dual" switch="MBB" prior="HI" linked="${spigot.UHD ? 1 : 0}" numFlows_A="7" numFlows_B="7">
+            let spigotNumber = spigot.number;
+            //if (isSNP) spigotNumber = 1 + (spigot.number % 4096) + (Math.floor(spigot.number/4096) * 4);
+            output += `    <Spigot idx="${spigotNumber}" mode="Src" format="3G" stream="dual" switch="MBB" prior="HI" linked="${spigot.UHD ? 1 : 0}" numFlows_A="7" numFlows_B="7">
         <Flow_A idx="0">
             <Caps smpte2022_6="1"/>
             <Params mcastAddress="" srcAddress="" dstPort="0" srcPort="0" type="none"/>
