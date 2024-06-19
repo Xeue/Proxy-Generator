@@ -282,7 +282,7 @@ async function buildXML(devices) {
         }
         const vidPort = isSNP ? 50000 : 50100;
         const audPort = isSNP ? 50000 : 5004;
-        output += `<Device guid="{${device.id}}" userName="MCR_${device.name}" typeName="${device.type}" softVer="17.0d.124" firmVer="DBAA5EE7" ipAddressA="${redIP}" ipAddressB="${blueIP}" linkSpeedA="25000" linkSpeedB="25000" numSources="${Math.max(device.spigots.map(spigot => spigot.number))}" numDests="0">\n`;
+        output += `<Device guid="{${device.id}}" userName="MCR_${device.name}" typeName="${device.type}" softVer="17.0d.124" firmVer="DBAA5EE7" ipAddressA="${redIP}" ipAddressB="${blueIP}" linkSpeedA="25000" linkSpeedB="25000" numSources="${Math.max(...device.spigots.map(spigot => Number(spigot.number)))}" numDests="0">\n`;
         device.spigots.forEach((spigot, index) => {
             let spigotNumber = spigot.number;
             //if (isSNP) spigotNumber = 1 + (spigot.number % 4096) + (Math.floor(spigot.number/4096) * 4);
