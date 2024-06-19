@@ -286,7 +286,7 @@ async function buildXML(devices) {
         device.spigots.forEach((spigot, index) => {
             let spigotNumber = spigot.number;
             //if (isSNP) spigotNumber = 1 + (spigot.number % 4096) + (Math.floor(spigot.number/4096) * 4);
-            output += `    <Spigot idx="${spigotNumber}" mode="Src" format="3G" stream="dual" switch="MBB" prior="HI" linked="${spigot.UHD ? 1 : 0}" numFlows_A="7" numFlows_B="7">
+            output += `    <Spigot idx="${spigotNumber-1}" mode="Src" format="3G" stream="dual" switch="MBB" prior="HI" linked="${spigot.UHD ? 1 : 0}" numFlows_A="7" numFlows_B="7">
         <Flow_A idx="0">
             <Caps smpte2022_6="1"/>
             <Params mcastAddress="" srcAddress="" dstPort="0" srcPort="0" type="none"/>
